@@ -8,8 +8,17 @@ public class PlayerMovement : NetworkBehaviour {
 
     public float speed = 10.0f;
     public Rigidbody rb;
+    public GameObject bulletPrefab;
+    public Transform bulletSpawn;
 
+
+    Component[] renderer;
     Vector3 movement;
+
+    
+
+
+
 
 
     private void Awake()
@@ -21,9 +30,31 @@ public class PlayerMovement : NetworkBehaviour {
     void Start () {      
 
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+
+        //CapsuleCollider CapsuleRef;
+
+        //GetComponentsInChildren(typeof(MeshRenderer));
+
+        //CapsuleRef.GetComponent<MeshRenderer>().material.color = Color.blue;
+
+
+        renderer = gameObject.GetComponentsInChildren<Renderer>();
+   
+        if (renderer[0] is Renderer)
+        {
+            Renderer temp = (Renderer)renderer[0];
+            temp.material.color = Color.blue;
+        }
+
+    }
+
+
+    // Update is called once per frame
+    void Update () {
 
         if (!isLocalPlayer)
         {
@@ -31,14 +62,29 @@ public class PlayerMovement : NetworkBehaviour {
         }
 
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Fire();
+        }
+        
         var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
         var z = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;
 
         transform.Rotate(0, x, 0);
         transform.Translate(0, 0, z);
             
+    }
+
+    void Fire()
+    {
+        var bullet = (GameObject)Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
+
+        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
+
+        Destroy(bullet, 2.0f);
 
     }
+
 
     private void FixedUpdate()
     {
@@ -52,7 +98,6 @@ public class PlayerMovement : NetworkBehaviour {
         //Rotate(mh, mv);
 
     }
-
 
     void Move(float h, float v)
     {
