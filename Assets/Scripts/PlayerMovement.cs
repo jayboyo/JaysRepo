@@ -10,6 +10,7 @@ public class PlayerMovement : NetworkBehaviour {
     public Rigidbody rb;
     public GameObject bulletPrefab;
     public Transform bulletSpawn;
+    public float bulletSpeed = 10.0f;
 
 
     Component[] renderer;
@@ -64,7 +65,7 @@ public class PlayerMovement : NetworkBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Fire();
+            CmdFire();
         }
         
         var x = Input.GetAxis("Horizontal") * Time.deltaTime * 150.0f;
@@ -75,11 +76,15 @@ public class PlayerMovement : NetworkBehaviour {
             
     }
 
-    void Fire()
+    [Command]
+    void CmdFire()
     {
         var bullet = (GameObject)Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
 
-        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
+        bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * bulletSpeed;
+
+        NetworkServer.Spawn(bullet);
+
 
         Destroy(bullet, 2.0f);
 
