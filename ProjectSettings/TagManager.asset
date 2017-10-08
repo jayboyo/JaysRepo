@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - PlayerCamera
+  - lobbySpawn
   layers:
   - Default
   - TransparentFX
